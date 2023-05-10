@@ -1,5 +1,6 @@
 #전체 검색은 되지만 삽입 수정 등은 막힘 해결 필요
 import socket
+import time
 
 # 서버 설정
 HOST = 'localhost'
@@ -17,6 +18,7 @@ while True:
     client_socket.sendall(request.encode())
 
     # 응답 수신
+    time.sleep(0.1)
     response = client_socket.recv(1024).decode()
 
     # 응답 출력

@@ -1,9 +1,9 @@
 import socket
-import mysql.connector
+import pymysql
 
 # MySQL 연결 설정
-db = mysql.connector.connect(
-    host="127.0.0.1",
+db = pymysql.connect(
+    host="localhost",
     port=3306,
     user="root",
     password="1234",
@@ -37,7 +37,7 @@ while True:
     if request.startswith('INSERT'):
         # INSERT 요청 처리
         _, domain, ip = request.split()
-        sql = "INSERT INTO domains (domain, ip) VALUES (%s, %s)"
+        sql = f"INSERT INTO domains (domain, ip) VALUES (%s, %s)"
         values = (domain, ip)
         cursor.execute(sql, values)
         db.commit()
@@ -45,7 +45,7 @@ while True:
     elif request.startswith('UPDATE'):
         # UPDATE 요청 처리
         _, domain, ip = request.split()
-        sql = "UPDATE domains SET ip = %s WHERE domain = %s"
+        sql = f"UPDATE domains SET ip = %s WHERE domain = %s"
         values = (ip, domain)
         cursor.execute(sql, values)
         db.commit()
