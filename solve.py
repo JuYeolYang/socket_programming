@@ -1,6 +1,6 @@
 import pymysql
 def recevied_data_processing(data:str):
-    command = ('D', 'I', 'W')
+    command = ('N', 'I', 'W')
     send_data = ""
     if data.find(':') > -1:
         list_data= data.split(':')
@@ -45,7 +45,7 @@ def convert_domain_ip(value: str, value_type:str):
     if value_type == 'I':
         sql = "SELECT * FROM domain_table WHERE data = %s;"
     #D Command 인 경우
-    elif value_type == 'D':
+    elif value_type == 'N':
         sql = "SELECT * FROM domain_table WHERE zone = %s;"
     #W Command 인 경우
     elif value_type == 'W':

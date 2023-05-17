@@ -12,7 +12,7 @@ except Exception as e:
 
 #메세지 내용
 msg_list = ["I:1.1.1.1",
-            "D:test1.com",
+            "N:test1.com",
             "W:test3.com(3.3.3.3)"]
 
 #메세지 전송
