@@ -10,14 +10,16 @@ try:
 except Exception as e:
     print("error: ", e)
 
-msg = "I:1.1.1.1"
-client_sock.sendall(msg.encode('utf-8'))
-data = client_sock.recv(1024)
-print("recv: \n", repr(data.decode('utf-8')))
+#메세지 내용
+msg_list = ["I:1.1.1.1",
+            "D:test1.com",
+            "W:test3.com(3.3.3.3)"]
 
-msg = "D:test1.com"
-client_sock.sendall(msg.encode('utf-8'))
-data = client_sock.recv(1024)
-print("recv: \n", data.decode('utf-8'))
+#메세지 전송
+for msg in msg_list:
+    client_sock.sendall(msg.encode('utf-8'))
+    data = client_sock.recv(1024).decode('utf-8')
+    print("recv: \n", repr(data))
 
+#소켓 닫기
 client_sock.close()
