@@ -111,7 +111,7 @@ def timer(sec: int):
         sec -= 1
         time.sleep(1)
         print(sec)
-    # Implement TLD
+    # Implement TTL
     cursor.execute("TRUNCATE table Cache_DNS;")
     conn.commit()
     print("Query executed-Cache deleted")
