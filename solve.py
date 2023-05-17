@@ -1,38 +1,14 @@
+import pymysql
 def recevied_data_processing(data:str):
-    command = ('W', 'R', 'C', 'D', 'I')
+    command = ('D', 'I')
     send_data = ""
-    if data.find(':'):
+    if data.find(':') > -1:
         list_data= data.split(':')
-        #file write
-        if list_data[0].upper() == command[0]:
-            #start: 메세지 시작 index, 
-            #end: 메세지 끝 index
-            start = list_data[1].find('(')
-            end = list_data[1].find(')')
-            #메세지 추출
-            msg = list_data[1][start + 1 : end]
-            #파일 이름
-            file_name = list_data[1][:start]
-            #file_RW 메소드 반환값
-            send_data = file_RW(file_name, 'w', msg)
-        
-        #file read
-        elif list_data[0].upper() == command[1]:
-            #파일 이름
-            file_name = list_data[1]
-            #file_RW 메소드 반환값
-            send_data = file_RW(file_name, 'r')
-        
-        #Circulate
-        elif list_data[0].upper() == command[2]:
-            send_data = arithmetic_operation(list_data[1])
-        
-        #Domain
-        elif list_data[0].upper() == command[3]:
-            return 0
-        #ip
-        elif list_data[0].upper() == command[4]:
-            return 0
+        #Domain, ip
+        if list_data[0].upper() in command:
+            value_type = list_data[0].upper()
+            value = list_data[1]
+            send_data = convert_domain_ip(value, value_type)
         #command가 잘못 입력된 경우
         else:
             send_data = list_data[0] + " command is unable."
@@ -45,32 +21,29 @@ def recevied_data_processing(data:str):
     
     return send_data
 
-def file_RW(file_name:str, type:str, msg = None):
-    try:
-        #write 인 경우
-        if type == 'w':
-            f = open(file_name, 'w') #파일 open
-            f.write(msg)
-            f.close()
-            return "Message write completed successfully"
-        #read 인 경우
-        elif type == 'r':
-            send_msg = ""
-            f = open(file_name, 'r') #파일 open
-            file_data = f.readlines() #파일에 모든 문자열 가지고 오기
-            for line in file_data: #각 line 문자열 이어 붙이기
-                send_msg += line
-            f.close()
-            return send_msg
-        
-        else: # 예외처리
-            raise Exception("w, r 외의 type이 들어왔습니다.")
-    except Exception as e:
-        print("Exception: ", e)
+def convert_domain_ip(value: str, value_type:str):
+    #value_type와 mysql의 colunm value랑 매핑
+    value_dict = {'I': 'data', 'D': 'zone'}
 
-def arithmetic_operation(expression:str):
+    #DB 연결
+    local_db = pymysql.connect(user = 'root',passwd = 'believeyourself',host = '127.0.0.1',db = 'dns',charset = 'utf8')
+    db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
     
-    postfix_notation = postfix()
-    return 0
-def postfix(queue:list):
-    return 0
+    #value_type 확인 후 sql문 생성
+    if value_type == 'I':
+        sql = "SELECT * FROM domain_table WHERE data = %s;"
+    elif value_type == 'D':
+        sql = "SELECT * FROM domain_table WHERE zone = %s;"
+    else:
+        return "Wrong value type"
+    
+    db_cursor.execute(sql, value)
+    result = db_cursor.fetchall()
+    result_dict = result[0]
+    print(result, result_dict)
+    db_cursor.close()
+    
+    if result is None:
+        return "There is no {} in DNS".format(value)
+    else:
+        return result_dict[value_dict[value_type]]

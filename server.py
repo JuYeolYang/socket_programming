@@ -1,18 +1,8 @@
-import pymysql
 import socket
 from solve import recevied_data_processing
 
 host = '127.0.0.1'
 port = 20000
-#DB 연결
-local_db = pymysql.connect(user = 'root',passwd = 'believeyourself',host = '127.0.0.1',db = 'dns',charset = 'utf8')
-
-db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
-sql = "SELECT * FROM domain_table ORDER BY id;"
-db_cursor.execute(sql)
-result = db_cursor.fetchall()
-print(result)
-#아직 완성 전
 
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
