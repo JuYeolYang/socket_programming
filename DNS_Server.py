@@ -77,7 +77,7 @@ def writeSub(ip: str, domain: str, root_domain: str):
     return "Query executed-Sub written"
 
 data = ""
-# Record type A, returns IPV4
+# Record type A, returns IPV4 -예외 처리 미완
 def type_A(ttl: int, domain: str):
     cursor.execute("SELECT * FROM Authoritative_DNS_ROOT WHERE domain_name = %s", domain)
     rows = cursor.fetchone()
@@ -93,7 +93,7 @@ def type_A(ttl: int, domain: str):
     return rows[0]
   
 
-# Record type CNAME, returns subdomain
+# Record type CNAME, returns subdomain -예외 처리 
 def type_CNAME(ttl: int, root_domain: str):
     cursor.execute("SELECT domain_name FROM Authoritative_DNS_SUB WHERE root_domain = %s", root_domain)
     rows = cursor.fetchone()
@@ -117,7 +117,7 @@ def timer(sec: int):
     print("Query executed-Cache deleted")
 
 
-# Receive & Send data
+# Receive & Send data -예외 처리 
 while True: 
     data = client_socket.recv(1024) 
     if not data:
