@@ -49,6 +49,8 @@ def convert_domain_ip(value: str, value_type: str):
         query = "INSERT INTO DNS (domain, ip) VALUES (%s, %s)"
         db_cursor.execute(query, (domain, ip))
         local_db.commit()
+        ttl_thread = threading.Thread(target=ttl_method, args=(local_db, db_cursor, 30, ip)) # TTL스레드 추가
+        ttl_thread.start() # TTL 스레드 실행
         return "도메인과 IP 정보가 성공적으로 삽입되었습니다."
     elif value_type.upper() == 'P':
         # DNS 테이블에 존재하는 모든 도메인과 IP 주소를 반환합니다.
@@ -70,3 +72,13 @@ def convert_domain_ip(value: str, value_type: str):
         return f"도메인 '{value}'와 해당 IP 주소가 성공적으로 삭제되었습니다."
     else:
         return "유효하지 않은 값 유형입니다."
+    
+# ttl 메소드 추가 -yunseoLee
+def ttl_method(db, cursor, ttl, ip):
+    while(ttl != 0):
+        ttl = ttl -1
+        time.sleep(1)
+    sql = "DELETE FROM DNS WHERE ip = %s"
+    value = ip
+    cursor.execute(sql, value)
+    db.commit()
