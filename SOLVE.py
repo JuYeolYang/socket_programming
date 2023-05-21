@@ -1,4 +1,6 @@
 import pymysql
+import thread
+import time
 
 def received_data_processing(data: str):
     # 지원하는 명령어
