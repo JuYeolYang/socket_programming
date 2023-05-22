@@ -1,5 +1,7 @@
 import socket
 from solve import recevied_data_processing
+from solve import init_table
+import pymysql
 
 host = '127.0.0.1'
 port = 20000
@@ -14,6 +16,13 @@ server_sock.listen()
 client_sock, addr = server_sock.accept()
 
 print("client addr: ", addr)
+local_db = pymysql.connect(user = 'socket',
+                               passwd = 'Sprogramming212@!@',
+                               host = 'localhost',
+                               db = 'dns',
+                               charset = 'utf8')
+db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
+init_table(db_cursor, local_db)
 
 help = ("==== type ====\n"
         "N: Sending domain matching ip\n"

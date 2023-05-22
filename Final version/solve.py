@@ -137,8 +137,8 @@ def convert_domain_ip(value: str, value_type:str):
                                db = 'dns',
                                charset = 'utf8')
     #table 생성 후 cursor 받기
-    db_cursor = init_table(local_db)
-
+    db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
+    
     #value_type 확인 후 sql문 생성
     #I Command 인 경우
     if value_type == 'I':
@@ -190,22 +190,29 @@ def convert_domain_ip(value: str, value_type:str):
             print("result_dict: ", result_dict)
             return result_dict[value_dict[value_type]]
     elif value_type == 'P': # domain_table에 있는 엔티티 출력
-        db_cursor.execute(sql)
-        sql_recive = db_cursor.fetchall()
-        db_cursor.close()
-        
-        result_str = ""
-        # 값들을 모두 문자열 형태로 변환
-        for s in sql_recive: 
-            result_str +=  str(s) + '\n'
-        return result_str
+        try:
+            db_cursor.execute(sql)
+            sql_recive = db_cursor.fetchall()
+            
+            result_str = ""
+            # 값들을 모두 문자열 형태로 변환
+            for s in sql_recive: 
+                result_str +=  str(s) + '\n'
+            return result_str
+        except Exception:
+            return "error"
+        finally:
+            db_cursor.close()
+            
     elif value_type in ['NW', 'D']: # INSERT, DELETE문 
         try:
             db_cursor.execute(sql, value)
             local_db.commit()
-            db_cursor.close()
         except pymysql.err.IntegrityError: 
             pass
+        finally:
+            db_cursor.close()
+            
         if value_type == "NW":
             return "Insert " + str(value) + "successfully"
         else:
@@ -214,8 +221,7 @@ def convert_domain_ip(value: str, value_type:str):
         return "Wrong value type"
 
 #table 생성
-def init_table(db: pymysql.connect):
-    cursor = db.cursor(pymysql.cursors.DictCursor)
+def init_table(cursor, db):
     create = "CREATE TABLE IF NOT EXISTS domain_table (id int(11) NOT NULL auto_increment, zone VARCHAR(64) default NULL, data VARCHAR(64) default NULL, PRIMARY KEY(id), KEY(zone), KEY(data), UNIQUE(zone, data));"
     cursor.execute(create)
     
@@ -225,9 +231,9 @@ def init_table(db: pymysql.connect):
     for sql in test_sample:
         try:
             cursor.execute(sql)
-            db.commit()
         except pymysql.err.IntegrityError as e:
             pass
+    db.commit()
     return cursor
 
 # ip형식을 지켰는지 검사하는 함수

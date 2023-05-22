@@ -1,5 +1,7 @@
 import socket
 from solve import recevied_data_processing
+from solve import init_table
+import pymysql
 
 host = '127.0.0.1'
 port = 20000
@@ -14,11 +16,15 @@ server_sock.listen()
 client_sock, addr = server_sock.accept()
 
 print("client addr: ", addr)
+local_db = pymysql.connect(user = 'socket',
+                               passwd = 'Sprogramming212@!@',
+                               host = 'localhost',
+                               db = 'dns',
+                               charset = 'utf8')
+db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
+init_table(db_cursor, local_db)
 
 help = ("==== type ====\n"
-        "W: File Write\n"
-        "R: File Read and send it\n"
-        "C: Circulate\n"
         "N: Sending domain matching ip\n"
         "I: Sending ip matching domain\n"
         "NW: Insert domain, ip into domain_table\n"
@@ -27,14 +33,11 @@ help = ("==== type ====\n"
         "\n\n==== input ====\n"
         "COMMAND:Domain or IP(IP or Domain)\n"
         "\n\n==== Example ====\n"
-        "W:test.txt(hello) -> Write test.txt hello\n"
-        "R:test.txt -> Read test.txt file\n"
         "I:1.1.1.1 -> test1.com\n"
         "N:test2.com -> 2.2.2.2\n"
         "NW:test4.com(4.4.4.4) -> Insert (test4.com, 4.4.4.4) successfully\n"
         "P: -> {'zone': 'test1.com', 'data': '1.1.1.1'} ...\n"
         "D:test3.com -> Delete test3.com successfully\n"
-        "C:3+2 -> 5\n"
         "asdf.. -> convert ASCII CODE")
 
 while True:

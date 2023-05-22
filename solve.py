@@ -58,7 +58,7 @@ def convert_domain_ip(value: str, value_type:str):
                                db = 'dns',
                                charset = 'utf8')
     #table 생성 후 cursor 받기
-    db_cursor = init_table(local_db)
+    db_cursor = local_db.cursor(pymysql.cursors.DictCursor)
 
     #value_type 확인 후 sql문 생성
     #I Command 인 경우

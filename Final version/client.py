@@ -3,7 +3,7 @@ import time
 import math
 import os
 
-host = '127.0.0.1'
+host = '192.168.18.1'
 port = 20000
 addr = (host, port)
 connect = True
